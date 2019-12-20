@@ -1,5 +1,5 @@
 import numpy as np
-import csv, json, os, ntpath, glob, datetime,time
+import csv, json, os, ntpath, glob, datetime, time
 from joblib import Parallel, delayed
 import cv2
 import matplotlib.pyplot as plt
@@ -157,37 +157,31 @@ class extractor:
         savedFilePath = self.resultFolderPath + ntpath.basename(filePath)[:-4] + "_labeled.png"
         cv2.imwrite(savedFilePath, image)
 
-        labeledIndividualResult=[]
+        labeledIndividualResult = []
 
-        for counter,(k,v) in enumerate(self.configDict["question"].items()):
+        for counter, (k, v) in enumerate(self.configDict["question"].items()):
             labeledIndividualResult.append(v["label"][individualResult[counter]])
-            # print(individualResult[counter],v["label"][individualResult[counter]])
 
-
-        return [ntpath.basename(filePath)[:-4]]+labeledIndividualResult
+        return [ntpath.basename(filePath)[:-4]] + labeledIndividualResult
 
     def alignImages(self, img, imReference):
 
         im1Gray = img
         im2Gray = imReference
 
-
         orb = cv2.ORB_create(self.MAX_FEATURES)
         keypoints1, descriptors1 = orb.detectAndCompute(im1Gray, None)
         keypoints2, descriptors2 = orb.detectAndCompute(im2Gray, None)
 
-
         matcher = cv2.DescriptorMatcher_create(cv2.DESCRIPTOR_MATCHER_BRUTEFORCE_HAMMING)
         matches = matcher.match(descriptors1, descriptors2, None)
 
-
         matches.sort(key=lambda x: x.distance, reverse=False)
-
 
         numGoodMatches = int(len(matches) * self.GOOD_MATCH_PERCENT)
         matches = matches[:numGoodMatches]
 
-        #label matches
+        # label matches
         # imMatches = cv2.drawMatches(img, keypoints1, imReference, keypoints2, matches, None)
         # cv2.imwrite("matches.jpg", imMatches)
 
@@ -197,7 +191,6 @@ class extractor:
         for i, match in enumerate(matches):
             points1[i, :] = keypoints1[match.queryIdx].pt
             points2[i, :] = keypoints2[match.trainIdx].pt
-
 
         h, mask = cv2.findHomography(points1, points2, cv2.RANSAC)
 
@@ -212,15 +205,13 @@ class extractor:
 
         parrllelResult = Parallel(n_jobs=-1)(delayed(self.labelQuestionnaire)(filePath) for filePath in self.fileList)
 
-
-        csvFilePath = self.resultFolderPath + "result_"+self.timeStamp+".csv"
+        csvFilePath = self.resultFolderPath + "result_" + self.timeStamp + ".csv"
         csvHeader = ["FileName"]
-        for key,_ in self.configDict["question"].items():
+        for key, _ in self.configDict["question"].items():
             csvHeader.append(key)
 
         # print(csvHeader)
         print("Start Saving")
-        self.saveToCSV([csvHeader],csvFilePath)
+        self.saveToCSV([csvHeader], csvFilePath)
         self.saveToCSV(parrllelResult, csvFilePath)
         print("Done")
-
