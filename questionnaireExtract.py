@@ -157,7 +157,14 @@ class extractor:
         savedFilePath = self.resultFolderPath + ntpath.basename(filePath)[:-4] + "_labeled.png"
         cv2.imwrite(savedFilePath, image)
 
-        return [ntpath.basename(filePath)[:-4]]+individualResult
+        labeledIndividualResult=[]
+
+        for counter,(k,v) in enumerate(self.configDict["question"].items()):
+            labeledIndividualResult.append(v["label"][individualResult[counter]])
+            # print(individualResult[counter],v["label"][individualResult[counter]])
+
+
+        return [ntpath.basename(filePath)[:-4]]+labeledIndividualResult
 
     def alignImages(self, img, imReference):
 
