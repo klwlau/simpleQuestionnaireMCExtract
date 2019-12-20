@@ -21,6 +21,7 @@ class extractor:
         self.refImage = self.readImgFile(self.configDict["refForm"])
         print("Previewing File")
         plt.imshow(self.refImage, cmap="gray")
+        plt.title("File preview")
         plt.show()
         self.diffToRefPath = self.makeDirInDataFolder("diffToRef")
         self.createLabelRefDict()
