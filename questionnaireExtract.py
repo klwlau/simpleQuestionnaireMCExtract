@@ -8,7 +8,7 @@ from skimage.measure import compare_ssim
 
 class extractor:
 
-    def __init__(self, configJsonPath):
+    def __init__(self, configJsonPath,detailMode = False):
         print("Read Config Json")
         self.MAX_FEATURES = 500
         self.GOOD_MATCH_PERCENT = 70
@@ -26,6 +26,7 @@ class extractor:
         self.diffToRefPath = self.makeDirInDataFolder("diffToRef")
         self.createLabelRefDict()
         self.timeStamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H%M%S')
+        self.detailMode = detailMode
 
     def readImgFile(self, imageFilePath):
         # data = np.array(Image.open(imageFilePath))
@@ -124,21 +125,22 @@ class extractor:
                     score, diff = compare_ssim(selectedPart, refPart, full=True)
                     optionScoreList.append(score)
 
-                    plt.subplot2grid((3, len(questionData)), (0, figCounter))
-                    # plt.title("%.4f" % score)
-                    plt.text(2, 2, "%.4f" % score, bbox={'facecolor': 'white', 'pad': 10})
-                    plt.imshow(refPart)
+                    if self.detailMode:
+                        plt.subplot2grid((3, len(questionData)), (0, figCounter))
+                        plt.text(2, 2, "%.4f" % score, bbox={'facecolor': 'white', 'pad': 10})
+                        plt.imshow(refPart)
 
-                    plt.subplot2grid((3, len(questionData)), (1, figCounter))
-                    plt.imshow(selectedPart)
-                    plt.subplot2grid((3, len(questionData)), (2, figCounter))
-                    plt.imshow(diff, vmin=-1, vmax=1)
-                    figCounter += 1
+                        plt.subplot2grid((3, len(questionData)), (1, figCounter))
+                        plt.imshow(selectedPart)
+                        plt.subplot2grid((3, len(questionData)), (2, figCounter))
+                        plt.imshow(diff, vmin=-1, vmax=1)
+                        figCounter += 1
 
-                plt.savefig(
-                    self.diffToRefPath + ntpath.basename(filePath)[:-4] + "_" + str(questionLabel) + "_labeled.png")
-                plt.clf()
-                plt.close('all')
+                if self.detailMode:
+                    plt.savefig(
+                        self.diffToRefPath + ntpath.basename(filePath)[:-4] + "_" + str(questionLabel) + "_labeled.png")
+                    plt.clf()
+                    plt.close('all')
 
                 questionAnswerList.append(optionScoreList.index(min(optionScoreList)))
 
