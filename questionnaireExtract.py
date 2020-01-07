@@ -49,15 +49,14 @@ class extractor:
         return os.path.join(self.dataFolder, dirName) + "/"
 
     def darwBoxWithText(self, imageArray, coordinate, size, boxText="", drawOption=False):
-        # print(type((coordinate[0] + size[0], coordinate[1] + size[1])))
+
         if drawOption:
             imgWithBox = cv2.rectangle(imageArray, coordinate, (coordinate[0] + size[0], coordinate[1] + size[1]),
                                        (0, 0, 255), 3)
             imgWithBoxText = cv2.putText(imgWithBox, boxText, (coordinate[0], coordinate[1] + 30),
                                          cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         else:
-            # imgWithBox = cv2.rectangle(imageArray, coordinate, (coordinate[0] + size[0], coordinate[1] + size[1]),
-            #                            (0, 255, 0), 3)
+
             imgWithBoxText = cv2.putText(imageArray, boxText, (coordinate[0] - 50, coordinate[1]),
                                          cv2.FONT_HERSHEY_SIMPLEX, 1, (36, 255, 12), 2)
         return imgWithBoxText
@@ -67,7 +66,7 @@ class extractor:
         self.refLabelDict = {}
         for questionLabel, metaData in self.questionDict.items():
             optionDict = {}
-            # optionDict["choice"] = metaData["choice"]
+
             for optionNumber in range(metaData["choice"]):
                 optionMetaData = {}
                 box_x_len = round(metaData["size"][0] / metaData["choice"])
@@ -184,9 +183,6 @@ class extractor:
         numGoodMatches = int(len(matches) * self.GOOD_MATCH_PERCENT)
         matches = matches[:numGoodMatches]
 
-        # label matches
-        # imMatches = cv2.drawMatches(img, keypoints1, imReference, keypoints2, matches, None)
-        # cv2.imwrite("matches.jpg", imMatches)
 
         points1 = np.zeros((len(matches), 2), dtype=np.float32)
         points2 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -213,7 +209,7 @@ class extractor:
         for key, _ in self.configDict["question"].items():
             csvHeader.append(key)
 
-        # print(csvHeader)
+
         print("Start Saving")
         self.saveToCSV([csvHeader], csvFilePath)
         self.saveToCSV(parrllelResult, csvFilePath)
