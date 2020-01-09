@@ -35,7 +35,7 @@ class extractor:
         data = cv2.imread(imageFilePath, 0)
         return data
 
-    #testupdate
+
 
     def saveToCSV(self, writeArray, fileName):
         """save a list of row to CSV file"""
