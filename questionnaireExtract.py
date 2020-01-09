@@ -32,7 +32,6 @@ class extractor:
         self.detailMode = detailMode
 
     def readImgFile(self, imageFilePath):
-        # data = np.array(Image.open(imageFilePath))
         data = cv2.imread(imageFilePath, 0)
         return data
 
