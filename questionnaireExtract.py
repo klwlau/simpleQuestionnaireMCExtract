@@ -12,17 +12,20 @@ class extractor:
         print("Read Config Json")
         self.MAX_FEATURES = 500
         self.GOOD_MATCH_PERCENT = 70
-        self.configDict = json.load(open(configJsonPath))
+        with open(configJsonPath, 'r') as f:
+            self.configDict = json.load(f)
         self.dataFolder = self.configDict["folder"]
-        self.questionDict = self.configDict["question"]
         self.resultFolderPath = self.makeDirInDataFolder("Result")
         self.fileList = glob.glob(self.dataFolder + "/*.*")
         self.fileList.sort()
         self.refImage = self.readImgFile(self.configDict["refForm"])
         print("Previewing File")
         plt.imshow(self.refImage, cmap="gray")
-        plt.title("File preview")
+        plt.title("Ref File preview")
         plt.show()
+        with open(configJsonPath, 'r') as f:
+            self.configDict = json.load(f)
+        self.questionDict = self.configDict["question"]
         self.diffToRefPath = self.makeDirInDataFolder("diffToRef")
         self.createLabelRefDict()
         self.timeStamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H%M%S')
@@ -139,7 +142,7 @@ class extractor:
                     plt.savefig(
                         self.diffToRefPath + ntpath.basename(filePath)[:-4] + "_" + str(questionLabel) + "_labeled.png")
                     plt.clf()
-                    plt.close('all')
+                plt.close('all')
 
                 questionAnswerList.append(optionScoreList.index(min(optionScoreList)))
 
